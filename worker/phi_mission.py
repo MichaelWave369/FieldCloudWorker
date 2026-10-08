@@ -59,7 +59,7 @@ def mission_from_status(status_raw):
     else:
         fail(type(sha) is str and re.fullmatch(r"[0-9a-f]{7}", sha) is not None, "RUN_SHA")
         fail(url == f"https://github.com/{SOURCE_REPO}/actions/runs/{run_id}", "RUN_URL")
-        fail(status["trigger"] in ("push", "schedule", "workflow_dispatch"), "RUN_EVENT")
+        fail(status["trigger"] in ("push", "schedule", "workflow_dispatch", "pull_request"), "RUN_EVENT")
     time_value = status["run_at"]
     fail(type(time_value) is str and re.fullmatch(
         r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)", time_value
