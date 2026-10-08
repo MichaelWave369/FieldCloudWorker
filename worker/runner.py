@@ -78,6 +78,10 @@ def write_receipt(receipt, docs=DOCS):
 def main():
     receipt = build_receipt()
     write_receipt(receipt)
+    from phi_mission import mission_from_status
+    mission = mission_from_status((DOCS / "status.json").read_bytes())
+    (DOCS / "phibot_mission.json").write_text(
+        json.dumps(mission, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print("observation:", receipt["overall"], "task-count:", len(receipt["results"]))
     # Fail the workflow only after the publish job publishes the error receipt.
     return 0

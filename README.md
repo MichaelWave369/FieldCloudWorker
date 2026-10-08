@@ -58,3 +58,12 @@ GitHub Actions is **not guaranteed to run at exact times**. It can be delayed or
 See [FieldDeck](https://github.com/MichaelWave369/FieldDeck), [FieldAccord](https://github.com/MichaelWave369/FieldAccord), and [SuperPhiVessel](https://github.com/MichaelWave369/SuperPhiVessel).
 
 Enter the Field. Carbon and silicon, building together.
+
+
+## FCW-03: PhiBot cloud Scout observation (review-only)
+
+A fixed Scout-style mission view of the existing `github_repo_metrics` observation is published as **[docs/phibot_mission.json](docs/phibot_mission.json)** after the next genuine scheduled/manual worker run. No separate PhiBot runtime is deployed in GitHub Actions, no model inference occurs, and there are no arbitrary mission requests. Identity is a namespace reference, **not** proof that the named bot ran.
+
+The mission record is deterministically derived from the already completed worker receipt. It binds the original receipt bytes with SHA-256, reports one of `OBSERVED_OK`/`OBSERVED_ERROR`, expires after eight hours, and carries hard zero model-call, write and authority budgets. The publisher recomputes and validates it before committing and deploying Pages. The preexisting `status.json` / `history.jsonl` schemas are unchanged so downstream FieldDeck, FieldAccord and Vessie observers remain compatible.
+
+The source digest is **not** a signature or operator authorization; it only detects changes relative to the same upstream status bytes. See [FCW-03 contract](docs/FCW-03-PHIBOT-CLOUD-MISSION.md). PhiBot runtime adoption of this untrusted evidence is a separate gate.
