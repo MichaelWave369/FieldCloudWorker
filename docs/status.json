@@ -1,0 +1,42 @@
+{
+  "schema": "fielddeck.cloud-observation.v1",
+  "receipt_kind": "observation_not_authorization",
+  "run_at": "2026-10-08T21:10:46+00:00",
+  "run_id": "37844903712",
+  "trigger": "push",
+  "sha": "8e81ffe",
+  "run_url": "https://github.com/MichaelWave369/FieldCloudWorker/actions/runs/37844903712",
+  "overall": "ok",
+  "results": [
+    {
+      "task": "heartbeat",
+      "kind": "observation",
+      "status": "ok",
+      "output": {
+        "signal": "alive"
+      },
+      "duration_s": 0.0
+    },
+    {
+      "task": "repo_layout",
+      "kind": "observation",
+      "status": "ok",
+      "output": {
+        "required_files": 3,
+        "present_files": 3
+      },
+      "duration_s": 0.0
+    },
+    {
+      "task": "github_repo_metrics",
+      "kind": "observation",
+      "status": "ok",
+      "output": {
+        "repository": "MichaelWave369/FieldCloudWorker",
+        "stars": 0,
+        "open_issues_and_prs": 0
+      },
+      "duration_s": 0.394
+    }
+  ]
+}
