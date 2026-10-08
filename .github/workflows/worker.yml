@@ -1,0 +1,91 @@
+name: FieldCloudWorker Observation Pilot
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - "tests/**"
+      - ".github/workflows/worker.yml"
+
+concurrency:
+  group: fieldcloudworker-observation
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    name: Run bounded read-only observations
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Run allowlisted observations
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python worker/runner.py
+      - name: Export bounded receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-observation
+          path: |
+            docs/status.json
+            docs/history.jsonl
+          if-no-files-found: error
+          retention-days: 3
+
+  publish:
+    name: Verify, persist and publish observation
+    needs: observe
+    if: ${{ needs.observe.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: public-observation
+          path: observation
+      - name: Validate and commit sanitized receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python worker/verify_receipt.py observation/status.json observation/history.jsonl
+          cp observation/status.json docs/status.json
+          cp observation/history.jsonl docs/history.jsonl
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/status.json docs/history.jsonl
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(worker): record observation [skip ci]"
+            git push origin HEAD:main
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy Pages explicitly
+        id: pages
+        uses: actions/deploy-pages@v4
+      - name: Flag observed task failure after publishing
+        run: python worker/check_health.py docs/status.json
