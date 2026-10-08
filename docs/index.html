@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark"><title>FieldCloudWorker | Enter the Field</title>
+<style>
+:root{color-scheme:dark;--bg:#071218;--panel:#10252b;--line:#2f545d;--text:#e8f7f3;--muted:#a4bbc0;--mint:#55e6c5;--amber:#f5a76c}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 70% 0%,#19434b,var(--bg) 57%);font:15px/1.6 system-ui,sans-serif;color:var(--text)}
+main{max-width:1000px;margin:0 auto;padding:48px 22px}.eyebrow{font-size:12px;letter-spacing:.2em;color:var(--mint);text-transform:uppercase}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}h1{font-size:clamp(26px,5vw,44px);line-height:1.1;margin:9px 0}h2{font-size:19px;margin:26px 0 12px}
+p{color:var(--muted)}.card{padding:20px;border-radius:14px;border:1px solid var(--line);background:var(--panel)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.pill{border-radius:999px;border:1px solid var(--line);padding:6px 14px;color:var(--muted)}
+.ok{color:var(--mint)!important;border-color:#327d6a!important}.error,.stale{color:var(--amber)!important;border-color:#8c5942!important}
+pre{font:13px/1.6 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0 0;color:#c4e0db}
+.tag{font-size:12px;letter-spacing:.08em;color:var(--mint);font-weight:700}.tag.error{color:var(--amber)}
+ul{padding-left:20px;color:var(--muted)}li{margin-bottom:6px}a{color:var(--mint)}footer{margin-top:32px;color:var(--muted);font-size:13px}
+</style></head><body><main>
+<div class="eyebrow">Enter the Field / Governed Cloud Infrastructure</div>
+<header><h1>FieldCloudWorker</h1><span id="health" class="pill">Awaiting first run</span></header>
+<p>Scheduled, read-only cloud observations. Each receipt is public evidence, never an authorization to act.</p>
+<section class="card"><div id="meta">No cloud observation published yet.</div></section>
+<h2>Task observations</h2><div class="grid" id="tasks"></div>
+<h2>Recent runs</h2><section class="card"><ul id="history"><li>Awaiting first GitHub Actions run.</li></ul></section>
+<footer><a href="https://github.com/MichaelWave369/FieldCloudWorker">Source and workflows</a> · No secrets, credentials, or local-device controls are available to this page.</footer>
+</main><script>
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function read(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error('unavailable');return r.text()}
+async function load(){
+ try{
+  const [s,h]=await Promise.all([read('./status.json'),read('./history.jsonl')]);
+  const d=JSON.parse(s);
+  if(d.schema!=='fielddeck.cloud-observation.v1'||d.receipt_kind!=='observation_not_authorization'||d.run_id==='local')throw Error('not a cloud observation');
+  const old=!Number.isFinite(Date.parse(d.run_at))||(Date.now()-Date.parse(d.run_at))/3600000>8;
+  const state=old?'stale':d.overall, pill=document.getElementById('health');
+  pill.className='pill '+state;pill.textContent=state==='ok'?'Healthy':state==='error'?'Task failure':'Stale observation';
+  const validUrl=/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/actions\/runs\/\d+$/.test(d.run_url||'');
+  document.getElementById('meta').innerHTML='Observed: '+esc(new Date(d.run_at).toLocaleString())+' · Trigger: '+esc(d.trigger)+' · '+esc(d.receipt_kind)+(validUrl?' · <a rel="noreferrer" href="'+esc(d.run_url)+'">Actions run</a>':'');
+  document.getElementById('tasks').innerHTML=d.results.map(r=>'<div class="card"><div class="tag '+(r.status==='ok'?'':'error')+'">'+esc(r.status)+' · '+esc(r.duration_s)+'s</div><strong>'+esc(r.task)+'</strong><pre>'+esc(JSON.stringify(r.output??{error_code:r.error_code},null,2))+'</pre></div>').join('');
+  const history=h.trim().split('\n').slice(-15).reverse().map(line=>{try{const v=JSON.parse(line);return '<li>'+esc(v.run_at)+' · '+esc(v.overall)+' · '+esc(v.ok_count)+' passed / '+esc(v.error_count)+' failed</li>'}catch{return ''}}).join('');
+  document.getElementById('history').innerHTML=history||'<li>No history yet</li>';
+ }catch(e){document.getElementById('meta').textContent='No published cloud observation yet. Merge the PR, configure Pages and run the workflow from GitHub Actions.'}
+}
+load();
+</script></body></html>

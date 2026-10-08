@@ -1,0 +1,16 @@
+{
+  "schema": "fielddeck.cloud-worker-manifest.v1",
+  "name": "FieldCloudWorker Pilot",
+  "role": "public_read_only_observer",
+  "authority": "none_for_external_side_effects",
+  "tasks": [
+    "heartbeat",
+    "repo_layout",
+    "github_repo_metrics"
+  ],
+  "receipts": [
+    "./status.json",
+    "./history.jsonl"
+  ],
+  "note": "Observations are not grants, approvals, or trusted attestations."
+}
