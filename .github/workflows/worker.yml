@@ -48,6 +48,7 @@ jobs:
           path: |
             docs/status.json
             docs/history.jsonl
+            docs/phibot_mission.json
           if-no-files-found: error
           retention-days: 3
 
@@ -77,11 +78,13 @@ jobs:
         run: |
           set -euo pipefail
           python worker/verify_receipt.py observation/status.json observation/history.jsonl
+          python worker/phi_mission.py verify observation/status.json observation/phibot_mission.json
           cp observation/status.json docs/status.json
           cp observation/history.jsonl docs/history.jsonl
+          cp observation/phibot_mission.json docs/phibot_mission.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/status.json docs/history.jsonl
+          git add docs/status.json docs/history.jsonl docs/phibot_mission.json
           if ! git diff --cached --quiet; then
             git commit -m "chore(worker): record observation [skip ci]"
             git push origin HEAD:main
