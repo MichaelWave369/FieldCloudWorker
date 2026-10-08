@@ -1,0 +1,28 @@
+{
+  "agent_identity_ref": "phibot.scout.cloud-review.v1",
+  "authority_granted": false,
+  "budget": {
+    "max_observations": 1,
+    "model_calls": 0,
+    "network_writes": 0
+  },
+  "epistemic": "UNVERIFIED_PUBLIC",
+  "execution_class": "DELEGATED_FIXED_OBSERVER_NOT_PHIBOT_RUNTIME",
+  "expires_at": "2026-10-09T06:09:12+00:00",
+  "memory_admitted": false,
+  "mission_id": "phibot.scout.public-repo-health.v1",
+  "model_inference_executed": false,
+  "network_write_executed": false,
+  "observed_at": "2026-10-08T22:09:12+00:00",
+  "outcome": "OBSERVED_OK",
+  "phibot_runtime_executed": false,
+  "receipt_sha256": "d831a31c7a0dd7260015851b636412f2195ee246e45882df843eb726bc0dad63",
+  "run_id": "37851619515",
+  "run_sha": "4935d95",
+  "run_url": "https://github.com/MichaelWave369/FieldCloudWorker/actions/runs/37851619515",
+  "schema": "phibot.cloud-mission-observation.v0.1",
+  "source_repository": "MichaelWave369/FieldCloudWorker",
+  "source_status_sha256": "284fdc315e81f464ae94218a258e0cdcf0f69b76209d46e42cb89815a6af8e6c",
+  "task_id": "github_repo_metrics",
+  "worker_observation_executed": true
+}
