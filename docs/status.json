@@ -1,11 +1,11 @@
 {
   "schema": "fielddeck.cloud-observation.v1",
   "receipt_kind": "observation_not_authorization",
-  "run_at": "2026-11-26T21:31:24+00:00",
-  "run_id": "45898701668",
+  "run_at": "2026-11-27T08:33:00+00:00",
+  "run_id": "45966517043",
   "trigger": "schedule",
-  "sha": "3fc7fec",
-  "run_url": "https://github.com/MichaelWave369/FieldCloudWorker/actions/runs/45898701668",
+  "sha": "fef516f",
+  "run_url": "https://github.com/MichaelWave369/FieldCloudWorker/actions/runs/45966517043",
   "overall": "ok",
   "results": [
     {
@@ -36,7 +36,7 @@
         "stars": 0,
         "open_issues_and_prs": 0
       },
-      "duration_s": 0.263
+      "duration_s": 0.48
     }
   ]
 }
